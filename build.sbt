@@ -4,7 +4,7 @@ lazy val allScalaVersion = "3.0.0-M3"
 ThisBuild / scalaVersion := allScalaVersion
 
 lazy val root = project.in(file(".")).
-  aggregate(subtreeSetting).
+  aggregate(subtreeSetting, subtreeAppending).
   settings(
     publish := {},
     publishLocal := {},
@@ -27,6 +27,15 @@ lazy val subtreeSetting = project
   .settings(commonSettings)
   .settings(
     name := "quicksignals-js-demos-subtree-setting",
+    scalaSource in Compile := baseDirectory.value / "src",
+  )
+
+lazy val subtreeAppending = project
+  .enablePlugins(ScalaJSPlugin)
+  .in(file("./demos/subtree-appending"))
+  .settings(commonSettings)
+  .settings(
+    name := "quicksignals-js-demos-subtree-appending",
     scalaSource in Compile := baseDirectory.value / "src",
   )
 
