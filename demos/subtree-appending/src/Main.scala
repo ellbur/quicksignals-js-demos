@@ -25,11 +25,15 @@ object Main {
     
     def setChildren(i: Int, children: Target[SeqSig[Node]])(using t: Tracking): Unit = {
       () setting { _ =>
-        node.childNodes.toSeq.drop(i) foreach node.removeChild
+        node.childNodes.toSeq.drop(i) foreach { n =>
+          println("Removing a child")
+          node.removeChild(n)
+        }
         
         children.track match {
           case SNil =>
           case SCons(head, tail) => 
+            println("Appending a child")
             node.appendChild(head)
             () setting { _ =>
               node.setChildren(i + 1, tail)
