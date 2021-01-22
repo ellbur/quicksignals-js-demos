@@ -12,16 +12,6 @@ object Main {
       node.childNodes.toSeq foreach node.removeChild
       children foreach node.appendChild
     }
-    
-    def withChildren(f: Tracking ?=> Seq[Node])(using t: Tracking): Node = {
-      node setting (_.setChildren(f))
-    }
-  }
-  
-  extension[A <: Element](tag: scalatags.JsDom.TypedTag[A]) {
-    def withChildren(f: Tracking ?=> Seq[Node])(using t: Tracking): A = {
-      tag.render setting (_.setChildren(f))
-    }
   }
   
   private def text(t: String): dom.Text = document.createTextNode(t)
@@ -54,21 +44,20 @@ object Main {
     
     val children = tracking {
       counters.track map { counter =>
-        val upButton = document.createElement("button")
-        upButton.textContent = "Up"
+        import scalatags.JsDom.all._
+        
+        val upButton = button("Up").render
         upButton.addEventListener("click", { _ =>
           counter.count() = counter.count.now + 1
         })
-
-        val countField = document.createElement("span")
-        counter.count foreach { count =>
-          countField.innerText = count.toString
+        
+        val countField = span().render setting { s =>
+          s.innerText = counter.count.track.toString
         }
+        
+        val testField = input(`type` := "text").render
 
-        val li = document.createElement("li")
-        li.appendChild(upButton)
-        li.appendChild(countField)
-        li
+        li(upButton, countField, testField).render
       }
     }
 
